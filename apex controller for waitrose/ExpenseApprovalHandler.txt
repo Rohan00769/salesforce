@@ -1,0 +1,36 @@
+public with sharing class ExpenseApprovalHandler {
+
+    // Method to approve an expense
+    @AuraEnabled
+    public static String approveExpense(Id expenseId, String comment) {
+        // Retrieve the expense record
+        Expense__c expense = [SELECT Id, Expense_status__c, Comments__c FROM Expense__c WHERE Id = :expenseId LIMIT 1];
+
+        // If the status is already approved or rejected, allow the change to "Approved"
+        expense.Expense_status__c = 'Approved';
+        expense.Comments__c = comment;
+        
+        // Update the record
+        update expense;
+
+        // Optionally, trigger any events or notifications here
+        return 'Expense approved successfully';
+    }
+
+    // Method to reject an expense
+    @AuraEnabled
+    public static String rejectExpense(Id expenseId, String comment) {
+        // Retrieve the expense record
+        Expense__c expense = [SELECT Id, Expense_status__c, Comments__c FROM Expense__c WHERE Id = :expenseId LIMIT 1];
+
+        // If the status is already approved or rejected, allow the change to "Rejected"
+        expense.Expense_status__c = 'Rejected';
+        expense.Comments__c = comment;
+
+        // Update the record
+        update expense;
+
+        // Optionally, trigger any events or notifications here
+        return 'Expense rejected successfully';
+    }
+}

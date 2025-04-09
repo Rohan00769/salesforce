@@ -1,0 +1,44 @@
+public with sharing class ExpenseController {
+
+    // Apex method to fetch the picklist values for Expense Type field
+    @AuraEnabled(cacheable=true)
+    public static List<String> getExpenseTypePicklistValues() {
+        List<String> expenseTypes = new List<String>();
+
+        // Get the field describe for the Expense Type field (replace 'Expense__c' with your object name)
+        Schema.DescribeFieldResult fieldResult = Expense__c.Expense_Type__c.getDescribe();
+        
+        // Get the picklist values for the field
+        List<Schema.PicklistEntry> picklistValues = fieldResult.getPicklistValues();
+        
+        // Add the picklist values to the list
+        for (Schema.PicklistEntry entry : picklistValues) {
+            expenseTypes.add(entry.getLabel());
+        }
+        
+        return expenseTypes;
+    }
+
+    // Apex method to create an Expense record
+    @AuraEnabled
+    public static String createExpenseRecord(String expenseDescription, String expenseType, Decimal expenseAmount, Date expenseDate) {
+        try {
+         
+            // Create the Expense record
+            Expense__c newExpense = new Expense__c(
+                Description__c = expenseDescription,
+                Expense_Type__c = expenseType,
+                Amount__c = expenseAmount,
+                Expense_Date__c = expenseDate
+            );
+            
+            // Insert the new Expense record
+            insert newExpense;
+
+            return 'Expense created successfully with ID: ' + newExpense.Id;
+        } catch (Exception e) {
+            System.debug('Error creating expense: ' + e.getMessage());
+            throw new AuraHandledException('Error creating expense: ' + e.getMessage());
+        }
+    }
+}

@@ -1,0 +1,31 @@
+public with sharing class ExpenseEventPublisher {
+
+    // Method to publish the Platform Event when an expense status is updated
+    @AuraEnabled
+    public static String publishExpenseStatusChange(Id expenseId, String newStatus, String comment) {
+        try {
+            // Retrieve the Expense record
+            Expense__c expense = [SELECT Id, Description__c, Expense_status__c FROM Expense__c WHERE Id = :expenseId LIMIT 1];
+            
+            // Update the expense status
+            expense.Expense_status__c = newStatus;
+            update expense;
+
+            // Publish Platform Event
+            ExpenseStatusChangeEvent__e expenseEvent = new ExpenseStatusChangeEvent__e(
+                ExpenseId__c = expense.Id,
+                Status__c = newStatus,
+                Comment__c = comment
+            );
+            System.debug('Published event: ' + expenseEvent);  // Debug to check the published event data
+
+            // Fire the platform event
+            Database.SaveResult result = EventBus.publish(expenseEvent);
+
+            // Return success message
+            return 'Expense status updated and event published successfully!';
+        } catch (Exception e) {
+            throw new AuraHandledException('Error publishing expense status change: ' + e.getMessage());
+        }
+    }
+}

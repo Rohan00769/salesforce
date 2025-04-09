@@ -1,0 +1,59 @@
+public with sharing class ExpenseFilterController {
+      // Apex method to fetch the picklist values for Expense Status field
+    @AuraEnabled(cacheable=true)
+    public static List<String> getExpenseStatusPicklistValues() {
+        List<String> expensestatus = new List<String>();
+
+        // Get the field describe for the Expense Type field (replace 'Expense__c' with your object name)
+        Schema.DescribeFieldResult fieldResult = Expense__c.Expense_status__c.getDescribe();
+        
+        // Get the picklist values for the field
+        List<Schema.PicklistEntry> picklistValues = fieldResult.getPicklistValues();
+        
+        // Add the picklist values to the list
+        for (Schema.PicklistEntry entry : picklistValues) {
+            expensestatus.add(entry.getLabel());
+        }
+        
+        return expensestatus;
+    }
+    @AuraEnabled(cacheable=true) 
+	public static List<Expense__c> getFilteredExpenses(String expenseType, Date startDate, Date endDate) {
+    // Start the query with the basic SELECT statement
+    String query = 'SELECT Id, Name, Amount__c, Expense_Type__c, Description__c, Expense_Date__c, Expense_status__c FROM Expense__c';
+    
+    // Log the parameters to confirm they are being passed correctly
+    System.debug('Received Expense Type: ' + expenseType);
+    System.debug('Received Start Date: ' + startDate);
+    System.debug('Received End Date: ' + endDate);
+    
+    // Create a list to hold dynamic conditions
+    List<String> conditions = new List<String>();
+
+    // Add filter for Expense Type if provided and not blank
+    if (String.isNotBlank(expenseType)) {
+        conditions.add('Expense_Type__c = :expenseType');
+    }
+
+    // Add filter for Date Range if both startDate and endDate are provided
+    if (startDate != null && endDate != null) {
+        conditions.add('Expense_Date__c >= :startDate AND Expense_Date__c <= :endDate');
+    }
+
+    // Add the conditions to the query
+    if (!conditions.isEmpty()) {
+        query += ' WHERE ' + String.join(conditions, ' AND ');
+    }
+
+    // Log the final query being executed
+    System.debug('Final SOQL Query: ' + query);
+
+    // Execute the query
+    List<Expense__c> expenses = Database.query(query);
+
+    // Log the number of records retrieved
+    System.debug('Expenses Retrieved: ' + expenses.size());
+    
+    return expenses;
+}
+}
