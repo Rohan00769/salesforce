@@ -1,0 +1,63 @@
+<template>
+    <lightning-card title="Expense List">
+        <div class="slds-m-around_medium">
+            <!-- Filter by Expense Type - Combobox for Picklist -->
+            <lightning-combobox
+                label="Expense Type"
+                value={expenseType}
+                options={expenseTypeOptions}
+                onchange={handleExpenseTypeChange}
+                placeholder="Select Expense Type">
+            </lightning-combobox>
+
+            <!-- Filter by Start Date -->
+            <lightning-input 
+                label="Start Date" 
+                type="date" 
+                value={startDateFormatted}
+                onchange={handleStartDateChange}>
+            </lightning-input>
+
+            <!-- Filter by End Date -->
+            <lightning-input 
+                label="End Date" 
+                type="date" 
+                value={endDateFormatted}
+                onchange={handleEndDateChange}>
+            </lightning-input>
+
+            <!-- Search Button to Trigger Filtering -->
+            <lightning-button 
+                label="Search" 
+                onclick={handleSearchClick} 
+                class="slds-m-top_small">
+            </lightning-button>
+
+            <!-- Reset Filters Button -->
+            <lightning-button 
+                label="Reset Filters" 
+                onclick={handleResetFilters} 
+                class="slds-m-top_small">
+            </lightning-button>
+
+            <!-- Display Filtered Expenses in a DataTable -->
+            <lightning-datatable 
+                data={expenses} 
+                columns={columns} 
+                key-field="Id" 
+                hide-checkbox-column
+                onrowaction={handleRowAction}>
+            </lightning-datatable>
+
+            <!-- Modal for Expense Approval -->
+        <template if:true={isModalOpen}>
+            <c-expenseapproval
+                expense-id={selectedExpenseId}
+                onclose={closeModal}
+                onapprove={handleApproveExpense}
+                onreject={handleRejectExpense}>
+            </c-expenseapproval>
+        </template>
+        </div>
+    </lightning-card>
+</template>

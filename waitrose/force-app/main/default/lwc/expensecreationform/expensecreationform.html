@@ -1,0 +1,26 @@
+<template>
+    <lightning-card title="Create Expense">
+      <div class="slds-p-around_medium">
+        <!-- Expense Description -->
+        <lightning-input label="Expense Description" value={expenseDescription} onchange={handleDescriptionChange}></lightning-input>
+  
+        <!-- Expense Type (Dropdown populated from Apex picklist values) -->
+        <lightning-combobox
+          label="Expense Type"
+          value={expenseType}
+          options={expenseTypeOptions}
+          onchange={handleExpenseTypeChange}
+        ></lightning-combobox>
+  
+        <!-- Expense Amount -->
+        <lightning-input label="Amount" type="number" value={expenseAmount} onchange={handleAmountChange}></lightning-input>
+  
+        <!-- Expense Date -->
+        <lightning-input label="Expense Date" type="date" value={expenseDate} onchange={handleDateChange}></lightning-input>
+  
+        <!-- Submit Button -->
+        <lightning-button variant="brand" label="Submit" onclick={handleSubmit}></lightning-button>
+      </div>
+    </lightning-card>
+  </template>
+  

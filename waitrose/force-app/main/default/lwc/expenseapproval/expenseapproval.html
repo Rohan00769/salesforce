@@ -1,0 +1,19 @@
+<template>
+    <lightning-card title="Expense Approval">
+        <div class="slds-m-around_medium">
+            <lightning-record-view-form record-id={expenseId} object-api-name="Expense__c">
+                <lightning-output-field field-name="Expense_Type__c"></lightning-output-field>
+                <lightning-output-field field-name="Amount__c"></lightning-output-field>
+                <lightning-output-field field-name="Description__c"></lightning-output-field>
+                <lightning-output-field field-name="Expense_status__c"></lightning-output-field>
+            </lightning-record-view-form>
+
+            <lightning-textarea label="Comments" value={comment} onchange={handleCommentChange}></lightning-textarea>
+
+            <lightning-button label="Approve" onclick={handleApprove} variant="brand"></lightning-button>
+            <lightning-button label="Reject" onclick={handleReject} variant="destructive"></lightning-button>
+
+            <lightning-button label="Close" onclick={handleClose}></lightning-button>
+        </div>
+    </lightning-card>
+</template>
